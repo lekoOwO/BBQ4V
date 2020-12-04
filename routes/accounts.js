@@ -1,7 +1,6 @@
 var express = require('express');
 var oauth2 = require('../models/oauth2');
 var accounts = require('../models/accounts');
-var registerToken = require('../models/registerToken');
 
 var router = express.Router();
 
@@ -61,7 +60,7 @@ router.route('/')
 // 獲取如 /accounts/1 請求
 router.route('/:id')
     // 取得指定的一筆資源
-    .get(function (req, res) {
+    .get(oauth2.accessControl(["admin"]), function (req, res) {
         accounts.item(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
@@ -77,7 +76,7 @@ router.route('/:id')
         });
     })
     // 刪除指定的一筆資源
-    .delete(function (req, res) {        
+    .delete(oauth2.accessControl(["admin"]), function (req, res) {        
         accounts.delete(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
@@ -96,7 +95,7 @@ router.route('/:id')
         });
     })
     // 覆蓋指定的一筆資源
-    .put(function (req, res) {
+    .put(oauth2.accessControl(["admin"]), function (req, res) {
         accounts.put(req, function (err, results) {
             if (err) {
                 res.sendStatus(500);
@@ -114,7 +113,7 @@ router.route('/:id')
         });
     })
     // 更新指定的一筆資源 (部份更新)
-    .patch(function (req, res) {
+    .patch(oauth2.accessControl(["admin"]), function (req, res) {
         accounts.patch(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);

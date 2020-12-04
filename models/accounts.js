@@ -1,6 +1,8 @@
 const mysql = require('mysql');
 const db = require("./db")
 
+const tableName = "accounts"
+
 module.exports = {
     items: function (req, callback) {
         const sql = 'SELECT * FROM ' + tableName;

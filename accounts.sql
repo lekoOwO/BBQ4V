@@ -23,10 +23,10 @@ CREATE TABLE IF NOT EXISTS `account-groups` (
   `accountId` int(10) unsigned NOT NULL,
   `groupId` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `FK__accounts` (`accountId`),
-  KEY `FK__groups` (`groupId`),
-  CONSTRAINT `FK__accounts` FOREIGN KEY (`accountId`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK__groups` FOREIGN KEY (`groupId`) REFERENCES `groups` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `FK_account-groups_accounts` (`accountId`),
+  KEY `FK_account-groups_groups` (`groupId`),
+  CONSTRAINT `FK_account-groups_accounts` FOREIGN KEY (`accountId`) REFERENCES `accounts` (`id`),
+  CONSTRAINT `FK_account-groups_groups` FOREIGN KEY (`groupId`) REFERENCES `groups` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 取消選取資料匯出。
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `groups` (
 
 -- 傾印  資料表 BBQ4V.register-token 結構
 CREATE TABLE IF NOT EXISTS `register-token` (
-  `token` text NOT NULL,
+  `token` text NOT NULL DEFAULT uuid(),
   `role` text NOT NULL DEFAULT 'guest',
   `remaining` int(10) unsigned NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `streamer` (
 CREATE TABLE IF NOT EXISTS `video` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `url` text NOT NULL,
-  `streamerId` int(10) unsigned NOT NULL DEFAULT 0,
+  `streamerId` int(10) unsigned NOT NULL,
   `description` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `url` (`url`) USING HASH,

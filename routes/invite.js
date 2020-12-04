@@ -77,3 +77,5 @@ router.route('/:token')
             res.sendStatus(204);
         });
     })
+
+module.exports = router;

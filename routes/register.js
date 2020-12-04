@@ -27,3 +27,5 @@ router.route("/:token")
             });
         })
     })
+
+module.exports = router;

@@ -10,6 +10,9 @@ var accounts = require('./routes/accounts');
 var invite = require('./routes/invite');
 var register = require('./routes/register');
 var streamer = require('./routes/streamer');
+var groups = require('./routes/groups');
+var accountGroups = require('./routes/account-groups');
+var videos = require('./routes/videos');
 
 var app = express();
 
@@ -23,12 +26,14 @@ app.use(functions.passwdCrypto);
 app.use('/oauth2/token', oauth2Token);
 app.use('/register', register);
 app.use('/streamer', streamer);
+app.use('/videos', videos);
 
 // 不須 token 即可訪問的 Web API 須定義在此上面，通常登入頁面 (此例為登入驗證取得 token 頁面的 /auth2/token)
 app.use(tokenVerify);
 
 app.use('/accounts', accounts);
-
+app.use('/groups', groups);
+app.use('/accountGroups', accountGroups);
 app.use('/invite', invite);
 
 app.listen(conf.port, function () {

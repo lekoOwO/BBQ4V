@@ -17,6 +17,20 @@
 CREATE DATABASE IF NOT EXISTS `BBQ4V` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
 USE `BBQ4V`;
 
+-- 傾印  資料表 BBQ4V.account-groups 結構
+CREATE TABLE IF NOT EXISTS `account-groups` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `accountId` int(10) unsigned NOT NULL,
+  `groupId` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK__accounts` (`accountId`),
+  KEY `FK__groups` (`groupId`),
+  CONSTRAINT `FK__accounts` FOREIGN KEY (`accountId`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK__groups` FOREIGN KEY (`groupId`) REFERENCES `groups` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 取消選取資料匯出。
+
 -- 傾印  資料表 BBQ4V.accounts 結構
 CREATE TABLE IF NOT EXISTS `accounts` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -24,7 +38,17 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `password` char(64) COLLATE utf8_unicode_ci NOT NULL,
   `role` text COLLATE utf8_unicode_ci NOT NULL DEFAULT 'guest' COMMENT '角色權限',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- 取消選取資料匯出。
+
+-- 傾印  資料表 BBQ4V.groups 結構
+CREATE TABLE IF NOT EXISTS `groups` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` int(11) NOT NULL,
+  `description` text DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 取消選取資料匯出。
 
@@ -39,12 +63,26 @@ CREATE TABLE IF NOT EXISTS `register-token` (
 
 -- 傾印  資料表 BBQ4V.streamer 結構
 CREATE TABLE IF NOT EXISTS `streamer` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` text NOT NULL,
   `url` text DEFAULT NULL,
   `description` text DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 取消選取資料匯出。
+
+-- 傾印  資料表 BBQ4V.video 結構
+CREATE TABLE IF NOT EXISTS `video` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `url` text NOT NULL,
+  `streamerId` int(10) unsigned NOT NULL DEFAULT 0,
+  `description` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `url` (`url`) USING HASH,
+  KEY `FK__streamer` (`streamerId`),
+  CONSTRAINT `FK__streamer` FOREIGN KEY (`streamerId`) REFERENCES `streamer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 取消選取資料匯出。
 

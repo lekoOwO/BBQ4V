@@ -7,6 +7,15 @@ function query(sql, cb) {
     return pool.query(sql, cb);
 }
 
+function queryP(sql) {
+    return new Promise((resolve, reject) => {
+        pool.query(sql, (err, results, fields) => {
+            if (err) reject(err)
+            else resolve([results, fields])
+        });
+    })
+}
+
 function getConnection(cb) {
     return pool.getConnection((err, connection) => {
         if (err) {
@@ -22,5 +31,6 @@ pool.on('release', function (connection) {
 
 module.exports = {
     query,
+    queryP,
     getConnection
 }

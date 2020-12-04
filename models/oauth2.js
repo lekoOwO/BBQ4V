@@ -2,6 +2,7 @@ var mysql = require('mysql');
 var jwt = require('jsonwebtoken');  // JWT 簽名和驗證
 var conf = require('../conf');
 const db = require("./db")
+const accountGroups = require("../models/account-groups")
 
 var tableName = 'accounts';
 var sql;
@@ -17,7 +18,8 @@ module.exports = {
         let payload = {
             iss: req.results[0].username,
             sub: conf.name,
-            role: req.results[0].role   // 自訂聲明。用來讓伺服器確認使用者的角色權限 (決定使用者能使用 Web API 的權限)
+            role: req.results[0].role,   // 自訂聲明。用來讓伺服器確認使用者的角色權限 (決定使用者能使用 Web API 的權限)
+            id: req.results[0].id
         };
 
         // 產生 JWT
@@ -75,24 +77,57 @@ module.exports = {
                 res.customStatus = 400;
                 res.customError = { error: 'unauthorized_client', error_description: '權限不足！' };
             } else {
-                let allowed = false;
-                for (const allowedRole of allowedRoles) {
-                    if (allowedRole[0] === "!") {
-                        if (req.user.role !== allowedRole.slice(1)) {
-                            allowed = true;
-                            break;
-                        }
-                    } else if (req.user.role === allowedRole) {
-                        allowed = true;
-                        break;
+                // 舊版權限管理轉新版
+                if (Array.isArray(allowedRoles)) {
+                    allowedRoles = {
+                        role: allowedRoles
                     }
                 }
-                if (!allowed) {
-                    res.customStatus = 400;
-                    res.customError = { error: 'unauthorized_client', error_description: '權限不足！' };
-                }
+
+                return new Promise(async (resolve, reject) => {
+                    let allowed = false;
+
+                    if (allowedRoles.role) {
+                        for (const allowedRole of allowedRoles.role) {
+                            if (allowedRole[0] === "!") {
+                                if (req.user.role !== allowedRole.slice(1)) {
+                                    allowed = true;
+                                    break;
+                                }
+                            } else if (req.user.role === allowedRole) {
+                                allowed = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (allowedRoles.group) {
+                        const accountId = req.user.id;
+                        const [results, _] = await accountGroups.getGroup(accountId);
+
+                        const groupIds = results.map(x => x.groupId)
+                        for (const allowedRole of allowedRoles.group) {
+                            if (typeof allowedRole === 'string' || allowedRole instanceof String) {
+                                if (groupIds.include(allowedRole)) {
+                                    allowed = true;
+                                }
+                            } else {
+                                // 使用 {table: TABLE_NAME} 來查詢使用者所屬群組 id 是否在指定的 table 內
+                                const tableName = allowedRole.table;
+                                const sql = mysql.format('SELECT 1 FROM ' + tableName + ' WHERE groupId IN (?) =', [groupIds]);
+                                const [results, _] = await db.queryP(sql);
+                                if (results.length) {
+                                    allowed = true;
+                                }
+                            }
+                        }
+                    }
+                    if (!allowed) {
+                        res.customStatus = 400;
+                        res.customError = { error: 'unauthorized_client', error_description: '權限不足！' };
+                    }
+                    next()
+                })
             }
-            next()
         }
     }
 };

@@ -1,6 +1,6 @@
 var express = require('express');
 var oauth2 = require('../models/oauth2');
-var streamer = require('../models/streamer');
+var videos = require('../models/videos');
 
 var router = express.Router();
 
@@ -17,18 +17,19 @@ router.use(oauth2.accessControl, function (req, res, next) {
 });
 */
 
+// 獲取 /videos 請求
 router.route('/')
     // 取得所有資源
     // oauth2.accessControl 定義在這，可針對 Web API 的 CRUD 個別確認權限
     // 只有 admin 可以看帳號列表
-    .get( function (req, res) {
+    .get(oauth2.accessControl(["admin"]), (function (req, res) {
         // 無權限
         if (res.customError) {
             res.status(res.customStatus).json(res.customError);
             return;
         }
 
-        streamer.items(req, function (err, results, fields) {
+        videos.items(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -42,10 +43,10 @@ router.route('/')
 
             res.json(results);
         });
-    })
+    }))
     // 新增一筆資源
-    .post(oauth2.accessControl(["!guest"]), function (req, res) {
-        streamer.add(req, function (err, results, fields) {
+    .post(oauth2.accessControl(["admin", ['!guest']]), function (req, res) {
+        videos.add(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -59,7 +60,7 @@ router.route('/')
 router.route('/:id')
     // 取得指定的一筆資源
     .get(function (req, res) {
-        streamer.item(req, function (err, results, fields) {
+        videos.item(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -74,8 +75,8 @@ router.route('/:id')
         });
     })
     // 刪除指定的一筆資源
-    .delete(function (req, res) {        
-        streamer.delete(req, function (err, results, fields) {
+    .delete(oauth2.accessControl(["admin"]), function (req, res) {        
+        accounts.delete(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -93,8 +94,8 @@ router.route('/:id')
         });
     })
     // 覆蓋指定的一筆資源
-    .put(function (req, res) {
-        streamer.put(req, function (err, results) {
+    .put(oauth2.accessControl(["admin"]), function (req, res) {
+        accounts.put(req, function (err, results) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -105,14 +106,14 @@ router.route('/:id')
                 return;
             }
             
-            streamer.item(req, function (err, results, fields) {
+            accounts.item(req, function (err, results, fields) {
                 res.json(results);
             });
         });
     })
     // 更新指定的一筆資源 (部份更新)
-    .patch(function (req, res) {
-        streamer.patch(req, function (err, results, fields) {
+    .patch(oauth2.accessControl(["admin"]), function (req, res) {
+        accounts.patch(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -129,4 +130,21 @@ router.route('/:id')
         });
     });
 
+router.route('/streamer/:id')
+    // 取得指定的一筆資源
+    .get(function (req, res) {
+        videos.getVideosOfStreamer(req, function (err, results, fields) {
+            if (err) {
+                res.sendStatus(500);
+                return console.error(err);
+            }
+
+            if (!results.length) {
+                res.sendStatus(404);
+                return;
+            }
+
+            res.json(results);
+        });
+    })
 module.exports = router;

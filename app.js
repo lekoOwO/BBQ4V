@@ -9,6 +9,7 @@ var tokenVerify = require('./routes/token-verify');
 var accounts = require('./routes/accounts');
 var invite = require('./routes/invite');
 var register = require('./routes/register');
+var streamer = require('./routes/streamer');
 
 var app = express();
 
@@ -21,6 +22,7 @@ app.use(bodyparser.json());
 app.use(functions.passwdCrypto);
 app.use('/oauth2/token', oauth2Token);
 app.use('/register', register);
+app.use('/streamer', streamer);
 
 // 不須 token 即可訪問的 Web API 須定義在此上面，通常登入頁面 (此例為登入驗證取得 token 頁面的 /auth2/token)
 app.use(tokenVerify);

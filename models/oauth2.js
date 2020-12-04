@@ -69,12 +69,28 @@ module.exports = {
         next();
     },
     // Web API 存取控制
-    accessControl: function(allowedRoles){
-        return function(req, res, next) {
-            console.log(req.user);
-            if (!allowedRoles.includes(req.user.role)){
+    accessControl: function (allowedRoles) {
+        return function (req, res, next) {
+            if (!req.user.role.length) {
                 res.customStatus = 400;
                 res.customError = { error: 'unauthorized_client', error_description: '權限不足！' };
+            } else {
+                let allowed = false;
+                for (const allowedRole of allowedRoles) {
+                    if (allowedRole[0] === "!") {
+                        if (req.user.role !== allowedRole.slice(1)) {
+                            allowed = true;
+                            break;
+                        }
+                    } else if (req.user.role === allowedRole) {
+                        allowed = true;
+                        break;
+                    }
+                }
+                if (!allowed) {
+                    res.customStatus = 400;
+                    res.customError = { error: 'unauthorized_client', error_description: '權限不足！' };
+                }
             }
             next()
         }

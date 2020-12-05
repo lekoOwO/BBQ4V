@@ -105,6 +105,10 @@ router.route('/:id')
         role: ["admin"],
         user: [req.params.id]
     })(req, res, next), function (req, res) {
+        if ((req.user.role !== "admin" && req.body.role === "admin")
+            || (req.user.role === "guest" && req.body.role === "member")) {
+            return res.statusCode(400).json({ error: 'unauthorized_client', error_description: '權限不足！' })
+        }
         accounts.put(req, function (err, results) {
             if (err) {
                 res.sendStatus(500);
@@ -126,6 +130,10 @@ router.route('/:id')
         role: ["admin"],
         user: [req.params.id]
     })(req, res, next), function (req, res) {
+        if ((req.user.role !== "admin" && req.body.role === "admin")
+            || (req.user.role === "guest" && req.body.role === "member")) {
+            return res.statusCode(400).json({ error: 'unauthorized_client', error_description: '權限不足！' })
+        }
         accounts.patch(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);

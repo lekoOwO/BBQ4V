@@ -17,11 +17,11 @@ router.use(oauth2.accessControl, function (req, res, next) {
 });
 */
 
-// 獲取 /accounts 請求
+
 router.route('/')
     // 取得所有資源
     // oauth2.accessControl 定義在這，可針對 Web API 的 CRUD 個別確認權限
-    // 只有 admin 可以看帳號列表
+    
     .get(oauth2.accessControl(["admin"]), function (req, res) {
         // 無權限
         if (res.customError) {
@@ -44,22 +44,19 @@ router.route('/')
             res.json(results);
         });
     })
-    // 新增一筆資源
+    
     .post(oauth2.accessControl(["admin"]),function (req, res) {
         accounts.add(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
             }
-
-            // 新的資源已建立 (回應新增資源的 id)
+            
             res.status(201).json(results.insertId);
         });
     });
 
-// 獲取如 /accounts/1 請求
 router.route('/:id')
-    // 取得指定的一筆資源
     .get((req, res, next) => oauth2.accessControl({
         role: ["admin"],
         user: [req.params.id]
@@ -125,7 +122,6 @@ router.route('/:id')
             });
         });
     })
-    // 更新指定的一筆資源 (部份更新)
     .patch((req, res, next) => oauth2.accessControl({
         role: ["admin"],
         user: [req.params.id]

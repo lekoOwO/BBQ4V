@@ -21,7 +21,6 @@ router.use(oauth2.accessControl, function (req, res, next) {
 router.route('/')
     // 取得所有資源
     // oauth2.accessControl 定義在這，可針對 Web API 的 CRUD 個別確認權限
-    // 只有 admin 可以看帳號列表
     .get(oauth2.accessControl(["admin"]), (function (req, res) {
         // 無權限
         if (res.customError) {
@@ -44,7 +43,6 @@ router.route('/')
             res.json(results);
         });
     }))
-    // 新增一筆資源
     .post(oauth2.accessControl(["admin", ['!guest']]), function (req, res) {
         videoTimemark.add(req, function (err, results, fields) {
             if (err) {
@@ -52,13 +50,12 @@ router.route('/')
                 return console.error(err);
             }
 
-            // 新的資源已建立 (回應新增資源的 id)
+            
             res.status(201).json(results.insertId);
         });
     });
 
 router.route('/:id')
-    // 取得指定的一筆資源
     .get(function (req, res) {
         videoTimemark.item(req, function (err, results, fields) {
             if (err) {
@@ -131,7 +128,6 @@ router.route('/:id')
     });
 
 router.route('/video/:id')
-    // 取得指定的一筆資源
     .get(function (req, res) {
         videoTimemark.getTimemarksOfVideo(req, function (err, results, fields) {
             if (err) {

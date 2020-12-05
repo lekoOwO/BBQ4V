@@ -23,7 +23,6 @@ router.use(oauth2.accessControl, function (req, res, next) {
 router.route('/')
     // 取得所有資源
     // oauth2.accessControl 定義在這，可針對 Web API 的 CRUD 個別確認權限
-    // 只有 admin 可以看帳號列表
     .get(oauth2.accessControl(["admin"]), (function (req, res) {
         // 無權限
         if (res.customError) {
@@ -46,7 +45,6 @@ router.route('/')
             res.json(results);
         });
     }))
-    // 新增一筆資源
     .post((req, res, next) => oauth2.accessControl({
         role: ["admin"],
         group: [{table: "clips", where: mysql.format("id = ?", [req.body.clipId])}]
@@ -56,14 +54,12 @@ router.route('/')
                 res.sendStatus(500);
                 return console.error(err);
             }
-
-            // 新的資源已建立 (回應新增資源的 id)
+            
             res.status(201).json(results.insertId);
         });
     });
 
 router.route('/:id')
-    // 取得指定的一筆資源
     .get(function (req, res) {
         clipVideo.item(req, function (err, results, fields) {
             if (err) {
@@ -80,13 +76,13 @@ router.route('/:id')
         });
     })
     // 刪除指定的一筆資源  mysql.format("id = ?", [req.body.clipId])
-    .delete(oauth2.accessControl({
+    .delete((req, res, next) => oauth2.accessControl({
         role: ["admin"],
         group: [{
             table: "clips",
             where: (async() => {
                 try {
-                    const sql = mysql.format("SELECT clipId FROM ?? WHERE id = ?", ["clip-video", req.param.id])
+                    const sql = mysql.format("SELECT clipId FROM ?? WHERE id = ?", ["clip-video", req.params.id])
                     const [results, fields] = await db.queryP(sql);
                     const clipId = results[0].clipId;
                     return mysql.format("id = ?", [clipId])
@@ -95,7 +91,7 @@ router.route('/:id')
                 }
             })()
         }]
-    }), function (req, res) {        
+    })(req, res, next), function (req, res) {        
         clipVideo.delete(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
@@ -114,13 +110,13 @@ router.route('/:id')
         });
     })
     // 覆蓋指定的一筆資源
-    .put(oauth2.accessControl({
+    .put((req, res, next) => oauth2.accessControl({
         role: ["admin"],
         group: [{
             table: "clips",
             where: (async() => {
                 try {
-                    const sql = mysql.format("SELECT clipId FROM ?? WHERE id = ?", ["clip-video", req.param.id])
+                    const sql = mysql.format("SELECT clipId FROM ?? WHERE id = ?", ["clip-video", req.params.id])
                     const [results, fields] = await db.queryP(sql);
                     const clipId = results[0].clipId;
                     return mysql.format("id = ?", [clipId])
@@ -129,7 +125,7 @@ router.route('/:id')
                 }
             })()
         }]
-    }), function (req, res) {
+    })(req, res, next), function (req, res) {
         clipVideo.put(req, function (err, results) {
             if (err) {
                 res.sendStatus(500);
@@ -147,13 +143,13 @@ router.route('/:id')
         });
     })
     // 更新指定的一筆資源 (部份更新)
-    .patch(oauth2.accessControl({
+    .patch((req, res, next) => oauth2.accessControl({
         role: ["admin"],
         group: [{
             table: "clips",
             where: (async() => {
                 try {
-                    const sql = mysql.format("SELECT clipId FROM ?? WHERE id = ?", ["clip-video", req.param.id])
+                    const sql = mysql.format("SELECT clipId FROM ?? WHERE id = ?", ["clip-video", req.params.id])
                     const [results, fields] = await db.queryP(sql);
                     const clipId = results[0].clipId;
                     return mysql.format("id = ?", [clipId])
@@ -162,7 +158,7 @@ router.route('/:id')
                 }
             })()
         }]
-    }), function (req, res) {
+    })(req, res, next), function (req, res) {
         clipVideo.patch(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
@@ -181,7 +177,6 @@ router.route('/:id')
     });
 
 router.route('/find')
-    // 取得指定的一筆資源
     .get(function (req, res) {
         clipVideo.find(req, function (err, results, fields) {
             if (err) {

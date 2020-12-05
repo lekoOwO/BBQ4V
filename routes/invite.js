@@ -35,8 +35,7 @@ router.route('/')
                 res.sendStatus(500);
                 return console.error(err);
             }
-
-            // 新的資源已建立 (回應新增資源的 id)
+            
             res.status(201).json(req.body.token);
         });
     });

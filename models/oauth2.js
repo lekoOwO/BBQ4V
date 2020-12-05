@@ -135,7 +135,7 @@ module.exports = {
                         res.customStatus = 400;
                         res.customError = { error: 'unauthorized_client', error_description: '權限不足！' };
                     }
-                    next()
+                    else next()
                 })
             }
         }

@@ -1,6 +1,6 @@
 var express = require('express');
 var oauth2 = require('../models/oauth2');
-var videos = require('../models/videos');
+var videoTimemark = require('../models/video-timemark');
 
 var router = express.Router();
 
@@ -29,7 +29,7 @@ router.route('/')
             return;
         }
 
-        videos.items(req, function (err, results, fields) {
+        videoTimemark.items(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -46,7 +46,7 @@ router.route('/')
     }))
     // 新增一筆資源
     .post(oauth2.accessControl(["admin", ['!guest']]), function (req, res) {
-        videos.add(req, function (err, results, fields) {
+        videoTimemark.add(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -60,7 +60,7 @@ router.route('/')
 router.route('/:id')
     // 取得指定的一筆資源
     .get(function (req, res) {
-        videos.item(req, function (err, results, fields) {
+        videoTimemark.item(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -75,8 +75,8 @@ router.route('/:id')
         });
     })
     // 刪除指定的一筆資源
-    .delete(oauth2.accessControl(["admin"]), function (req, res) {        
-        videos.delete(req, function (err, results, fields) {
+    .delete(oauth2.accessControl(["admin", ['!guest']]), function (req, res) {        
+        videoTimemark.delete(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -94,8 +94,8 @@ router.route('/:id')
         });
     })
     // 覆蓋指定的一筆資源
-    .put(oauth2.accessControl(["admin"]), function (req, res) {
-        videos.put(req, function (err, results) {
+    .put(oauth2.accessControl(["admin"], ['!guest']), function (req, res) {
+        videoTimemark.put(req, function (err, results) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -106,14 +106,14 @@ router.route('/:id')
                 return;
             }
             
-            videos.item(req, function (err, results, fields) {
+            videoTimemark.item(req, function (err, results, fields) {
                 res.json(results);
             });
         });
     })
     // 更新指定的一筆資源 (部份更新)
-    .patch(oauth2.accessControl(["admin"]), function (req, res) {
-        videos.patch(req, function (err, results, fields) {
+    .patch(oauth2.accessControl(["admin"], ['!guest']), function (req, res) {
+        videoTimemark.patch(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -130,10 +130,10 @@ router.route('/:id')
         });
     });
 
-router.route('/streamer/:id')
+router.route('/video/:id')
     // 取得指定的一筆資源
     .get(function (req, res) {
-        videos.getVideosOfStreamer(req, function (err, results, fields) {
+        videoTimemark.getTimemarksOfVideo(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);

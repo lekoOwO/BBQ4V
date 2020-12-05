@@ -100,20 +100,20 @@ module.exports = {
                             }
                         }
                     }
-                    if (allowedRoles.group) {
+                    if (!allowed && allowedRoles.group) {
                         const accountId = req.user.id;
                         const [results, _] = await accountGroups.getGroup(accountId);
 
                         const groupIds = results.map(x => x.groupId)
-                        for (const allowedRole of allowedRoles.group) {
-                            if (typeof allowedRole === 'string' || allowedRole instanceof String) {
+                        for await (const allowedRole of allowedRoles.group) {
+                            if (Number.isInteger(allowedRole)) {
                                 if (groupIds.include(allowedRole)) {
                                     allowed = true;
                                 }
                             } else {
-                                // 使用 {table: TABLE_NAME} 來查詢使用者所屬群組 id 是否在指定的 table 內
-                                const tableName = allowedRole.table;
-                                const sql = mysql.format('SELECT 1 FROM ' + tableName + ' WHERE groupId IN (?) =', [groupIds]);
+                                // 使用 {table: TABLE_NAME, where: WHERE_CONSTRAINT} 來查詢使用者所屬群組 id 是否在指定的 table 內
+                                const tableName = await allowedRole.table;
+                                const sql = mysql.format('SELECT 1 FROM ' + tableName + ` WHERE ${await (allowedRole.where) || "TRUE"} AND groupId IN (?) =`, [groupIds]);
                                 const [results, _] = await db.queryP(sql);
                                 if (results.length) {
                                     allowed = true;

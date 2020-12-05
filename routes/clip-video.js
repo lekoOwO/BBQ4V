@@ -1,6 +1,8 @@
+const mysql = require('mysql');
 var express = require('express');
 var oauth2 = require('../models/oauth2');
-var videos = require('../models/videos');
+var clipVideo = require('../models/clip-video');
+var db = require('../models/db');
 
 var router = express.Router();
 
@@ -17,7 +19,7 @@ router.use(oauth2.accessControl, function (req, res, next) {
 });
 */
 
-// 獲取 /videos 請求
+// 獲取 /clips 請求
 router.route('/')
     // 取得所有資源
     // oauth2.accessControl 定義在這，可針對 Web API 的 CRUD 個別確認權限
@@ -29,7 +31,7 @@ router.route('/')
             return;
         }
 
-        videos.items(req, function (err, results, fields) {
+        clipVideo.items(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -45,8 +47,11 @@ router.route('/')
         });
     }))
     // 新增一筆資源
-    .post(oauth2.accessControl(["admin", ['!guest']]), function (req, res) {
-        videos.add(req, function (err, results, fields) {
+    .post((req, res, next) => oauth2.accessControl({
+        role: ["admin"],
+        group: [{table: "clips", where: mysql.format("id = ?", [req.body.clipId])}]
+    })(req, res, next), function (req, res) {
+        clipVideo.add(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -60,7 +65,7 @@ router.route('/')
 router.route('/:id')
     // 取得指定的一筆資源
     .get(function (req, res) {
-        videos.item(req, function (err, results, fields) {
+        clipVideo.item(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -74,9 +79,24 @@ router.route('/:id')
             res.json(results);
         });
     })
-    // 刪除指定的一筆資源
-    .delete(oauth2.accessControl(["admin"]), function (req, res) {        
-        videos.delete(req, function (err, results, fields) {
+    // 刪除指定的一筆資源  mysql.format("id = ?", [req.body.clipId])
+    .delete(oauth2.accessControl({
+        role: ["admin"],
+        group: [{
+            table: "clips",
+            where: (async() => {
+                try {
+                    const sql = mysql.format("SELECT clipId FROM ?? WHERE id = ?", ["clip-video", req.param.id])
+                    const [results, fields] = await db.queryP(sql);
+                    const clipId = results[0].clipId;
+                    return mysql.format("id = ?", [clipId])
+                } catch (e) {
+                    return "FALSE"
+                }
+            })()
+        }]
+    }), function (req, res) {        
+        clipVideo.delete(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -94,8 +114,23 @@ router.route('/:id')
         });
     })
     // 覆蓋指定的一筆資源
-    .put(oauth2.accessControl(["admin"]), function (req, res) {
-        videos.put(req, function (err, results) {
+    .put(oauth2.accessControl({
+        role: ["admin"],
+        group: [{
+            table: "clips",
+            where: (async() => {
+                try {
+                    const sql = mysql.format("SELECT clipId FROM ?? WHERE id = ?", ["clip-video", req.param.id])
+                    const [results, fields] = await db.queryP(sql);
+                    const clipId = results[0].clipId;
+                    return mysql.format("id = ?", [clipId])
+                } catch (e) {
+                    return "FALSE"
+                }
+            })()
+        }]
+    }), function (req, res) {
+        clipVideo.put(req, function (err, results) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -106,14 +141,29 @@ router.route('/:id')
                 return;
             }
             
-            videos.item(req, function (err, results, fields) {
+            clipVideo.item(req, function (err, results, fields) {
                 res.json(results);
             });
         });
     })
     // 更新指定的一筆資源 (部份更新)
-    .patch(oauth2.accessControl(["admin"]), function (req, res) {
-        videos.patch(req, function (err, results, fields) {
+    .patch(oauth2.accessControl({
+        role: ["admin"],
+        group: [{
+            table: "clips",
+            where: (async() => {
+                try {
+                    const sql = mysql.format("SELECT clipId FROM ?? WHERE id = ?", ["clip-video", req.param.id])
+                    const [results, fields] = await db.queryP(sql);
+                    const clipId = results[0].clipId;
+                    return mysql.format("id = ?", [clipId])
+                } catch (e) {
+                    return "FALSE"
+                }
+            })()
+        }]
+    }), function (req, res) {
+        clipVideo.patch(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -130,10 +180,10 @@ router.route('/:id')
         });
     });
 
-router.route('/streamer/:id')
+router.route('/find')
     // 取得指定的一筆資源
     .get(function (req, res) {
-        videos.getVideosOfStreamer(req, function (err, results, fields) {
+        clipVideo.find(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);

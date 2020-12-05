@@ -13,6 +13,9 @@ var streamer = require('./routes/streamer');
 var groups = require('./routes/groups');
 var accountGroups = require('./routes/account-groups');
 var videos = require('./routes/videos');
+var clips = require('./routes/clips');
+var clipVideo = require('./routes/clip-video');
+var videoTimemark = require('./routes/video-timemark');
 
 var app = express();
 
@@ -27,6 +30,9 @@ app.use('/oauth2/token', oauth2Token);
 app.use('/register', register);
 app.use('/streamer', streamer);
 app.use('/videos', videos);
+app.use('/clips', clips);
+app.use('/clipVideo', clipVideo);
+app.use('/videoTimemark', videoTimemark);
 
 // 不須 token 即可訪問的 Web API 須定義在此上面，通常登入頁面 (此例為登入驗證取得 token 頁面的 /auth2/token)
 app.use(tokenVerify);

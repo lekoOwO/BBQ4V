@@ -100,6 +100,15 @@ module.exports = {
                             }
                         }
                     }
+                    if (!allowed && allowedRoles.user) {
+                        for await (let userId of allowedRoles.user) {
+                            if (req.user.id === parseInt(userId)) {
+                                allowed = true;
+                                break;
+                            }
+                        }
+                    }
+
                     if (!allowed && allowedRoles.group) {
                         const accountId = req.user.id;
                         const [results, _] = await accountGroups.getGroup(accountId);

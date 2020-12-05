@@ -60,7 +60,10 @@ router.route('/')
 // 獲取如 /accounts/1 請求
 router.route('/:id')
     // 取得指定的一筆資源
-    .get(oauth2.accessControl(["admin"]), function (req, res) {
+    .get((req, res, next) => oauth2.accessControl({
+        role: ["admin"],
+        user: [req.params.id]
+    })(req, res, next), function (req, res) {
         accounts.item(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
@@ -76,7 +79,10 @@ router.route('/:id')
         });
     })
     // 刪除指定的一筆資源
-    .delete(oauth2.accessControl(["admin"]), function (req, res) {        
+    .delete((req, res, next) => oauth2.accessControl({
+        role: ["admin"],
+        user: [req.params.id]
+    })(req, res, next), function (req, res) {        
         accounts.delete(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
@@ -95,7 +101,10 @@ router.route('/:id')
         });
     })
     // 覆蓋指定的一筆資源
-    .put(oauth2.accessControl(["admin"]), function (req, res) {
+    .put((req, res, next) => oauth2.accessControl({
+        role: ["admin"],
+        user: [req.params.id]
+    })(req, res, next), function (req, res) {
         accounts.put(req, function (err, results) {
             if (err) {
                 res.sendStatus(500);
@@ -113,7 +122,10 @@ router.route('/:id')
         });
     })
     // 更新指定的一筆資源 (部份更新)
-    .patch(oauth2.accessControl(["admin"]), function (req, res) {
+    .patch((req, res, next) => oauth2.accessControl({
+        role: ["admin"],
+        user: [req.params.id]
+    })(req, res, next), function (req, res) {
         accounts.patch(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);

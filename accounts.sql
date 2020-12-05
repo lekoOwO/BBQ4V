@@ -42,6 +42,39 @@ CREATE TABLE IF NOT EXISTS `accounts` (
 
 -- 取消選取資料匯出。
 
+-- 傾印  資料表 BBQ4V.clip-video 結構
+CREATE TABLE IF NOT EXISTS `clip-video` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `clipId` int(10) unsigned NOT NULL,
+  `videoId` int(10) unsigned NOT NULL,
+  `videoStartTime` int(10) unsigned NOT NULL COMMENT 'in ms',
+  `videoEndTime` int(10) unsigned NOT NULL,
+  `description` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK__clips` (`clipId`),
+  KEY `FK__video` (`videoId`),
+  CONSTRAINT `FK__clips` FOREIGN KEY (`clipId`) REFERENCES `clips` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK__video` FOREIGN KEY (`videoId`) REFERENCES `video` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 取消選取資料匯出。
+
+-- 傾印  資料表 BBQ4V.clips 結構
+CREATE TABLE IF NOT EXISTS `clips` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `url` text NOT NULL,
+  `groupId` int(10) unsigned NOT NULL,
+  `name` text DEFAULT NULL,
+  `thumbnail` text DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `url` (`url`) USING HASH,
+  KEY `FK__groups` (`groupId`),
+  CONSTRAINT `FK__groups` FOREIGN KEY (`groupId`) REFERENCES `groups` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 取消選取資料匯出。
+
 -- 傾印  資料表 BBQ4V.groups 結構
 CREATE TABLE IF NOT EXISTS `groups` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -77,11 +110,28 @@ CREATE TABLE IF NOT EXISTS `video` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `url` text NOT NULL,
   `streamerId` int(10) unsigned NOT NULL,
+  `name` text DEFAULT NULL,
+  `thumbnail` text DEFAULT NULL,
   `description` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `url` (`url`) USING HASH,
   KEY `FK__streamer` (`streamerId`),
   CONSTRAINT `FK__streamer` FOREIGN KEY (`streamerId`) REFERENCES `streamer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 取消選取資料匯出。
+
+-- 傾印  資料表 BBQ4V.video-timemark 結構
+CREATE TABLE IF NOT EXISTS `video-timemark` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `videoId` int(10) unsigned NOT NULL,
+  `startTime` int(10) unsigned NOT NULL COMMENT 'ms',
+  `endTime` int(10) unsigned NOT NULL,
+  `name` text DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK__video_timemark` (`videoId`),
+  CONSTRAINT `FK__video_timemark` FOREIGN KEY (`videoId`) REFERENCES `video` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 取消選取資料匯出。

@@ -33,9 +33,10 @@ module.exports = {
             access_token: token,
             token_type: 'bearer',
             expires_in: (Date.parse(new Date()) / 1000) + conf.increaseTime,    // UNIX 時間戳 + conf.increaseTime
-            scope: req.results[0].role,
+            role: req.results[0].role,
             info: {
-                username: req.results[0].username
+                username: req.results[0].username,
+                id: req.results[0].id
             }
         });
     },

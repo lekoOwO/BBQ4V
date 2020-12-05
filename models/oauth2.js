@@ -134,6 +134,7 @@ module.exports = {
                     if (!allowed) {
                         res.customStatus = 400;
                         res.customError = { error: 'unauthorized_client', error_description: '權限不足！' };
+                        res.status(res.customStatus).json(res.customError)
                     }
                     else next()
                 })

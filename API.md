@@ -100,7 +100,7 @@ register 用的 token
 Key | Value | Description
 ---- | --- | ---
 role |  role | 用邀請碼註冊的用戶屬於哪個用戶組
-remaining | int [1] | 邀請碼可以用幾次
+[remaining] | int [1] | 邀請碼可以用幾次
 
 ### 取得一個邀請碼的相關資訊
 

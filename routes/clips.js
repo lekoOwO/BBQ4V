@@ -22,7 +22,6 @@ router.use(oauth2.accessControl, function (req, res, next) {
 router.route('/')
     // 取得所有資源
     // oauth2.accessControl 定義在這，可針對 Web API 的 CRUD 個別確認權限
-    
     .get(oauth2.accessControl(["admin"]), (function (req, res) {
         // 無權限
         if (res.customError) {
@@ -45,7 +44,6 @@ router.route('/')
             res.json(results);
         });
     }))
-    
     .post((req, res, next) => oauth2.accessControl({
         role: ["admin"],
         group: [req.body.groupId]
@@ -62,9 +60,8 @@ router.route('/')
     });
 
 router.route('/:id')
-    
     .get(function (req, res) {
-        videos.item(req, function (err, results, fields) {
+        clips.item(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -83,7 +80,7 @@ router.route('/:id')
         role: ["admin"],
         group: [{"table": "clips", "where": mysql.format('id = ', [req.params.id])}]
     })(req, res, next), function (req, res) {        
-        accounts.delete(req, function (err, results, fields) {
+        clips.delete(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -105,7 +102,7 @@ router.route('/:id')
         role: ["admin"],
         group: [{"table": "clips", "where": mysql.format('id = ', [req.params.id])}]
     })(req, res, next), function (req, res) {
-        accounts.put(req, function (err, results) {
+        clips.put(req, function (err, results) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -126,7 +123,7 @@ router.route('/:id')
         role: ["admin"],
         group:[{"table": "clips", "where": mysql.format('id = ', [req.params.id])}]
     })(req, res, next), function (req, res) {
-        accounts.patch(req, function (err, results, fields) {
+        clips.patch(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
@@ -144,9 +141,8 @@ router.route('/:id')
     });
 
 router.route('/find')
-    
     .get(function (req, res) {
-        videos.find(req, function (err, results, fields) {
+        clips.find(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);

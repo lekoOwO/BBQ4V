@@ -75,7 +75,7 @@ router.route('/:id')
             res.json(results);
         });
     })
-    // 刪除指定的一筆資源  mysql.format("id = ?", [req.body.clipId])
+    // 刪除指定的一筆資源
     .delete((req, res, next) => oauth2.accessControl({
         role: ["admin"],
         group: [{

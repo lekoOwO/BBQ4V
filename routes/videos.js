@@ -43,7 +43,7 @@ router.route('/')
             res.json(results);
         });
     }))
-    .post(oauth2.accessControl(["admin", ['!guest']]), function (req, res) {
+    .post(oauth2.accessControl(['!guest']), function (req, res) {
         videos.add(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
@@ -91,7 +91,7 @@ router.route('/:id')
         });
     })
     // 覆蓋指定的一筆資源
-    .put(oauth2.accessControl(["admin"]), function (req, res) {
+    .put(oauth2.accessControl(["!guest"]), function (req, res) {
         videos.put(req, function (err, results) {
             if (err) {
                 res.sendStatus(500);
@@ -109,7 +109,7 @@ router.route('/:id')
         });
     })
     // 更新指定的一筆資源 (部份更新)
-    .patch(oauth2.accessControl(["admin"]), function (req, res) {
+    .patch(oauth2.accessControl(["!guest"]), function (req, res) {
         videos.patch(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);

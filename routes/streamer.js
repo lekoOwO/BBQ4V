@@ -71,7 +71,7 @@ router.route('/:id')
         });
     })
     // 刪除指定的一筆資源
-    .delete(function (req, res) {        
+    .delete(oauth2.accessControl(["!guest"]), function (req, res) {        
         streamer.delete(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
@@ -90,7 +90,7 @@ router.route('/:id')
         });
     })
     // 覆蓋指定的一筆資源
-    .put(function (req, res) {
+    .put(oauth2.accessControl(["!guest"]), function (req, res) {
         streamer.put(req, function (err, results) {
             if (err) {
                 res.sendStatus(500);
@@ -108,7 +108,7 @@ router.route('/:id')
         });
     })
     // 更新指定的一筆資源 (部份更新)
-    .patch(function (req, res) {
+    .patch(oauth2.accessControl(["!guest"]), function (req, res) {
         streamer.patch(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);

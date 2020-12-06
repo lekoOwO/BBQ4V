@@ -1,10 +1,11 @@
-*: 需要 Token
+## API 權限標記
 
-+: 需要 Admin 權限
-
-.: 需要擁有權限
-
--: 非遊客用戶組
+Sign  | Description
+----  | ---
+`*` | 需要 Token
+`+` | 需要 Admin 權限
+`.` | 需要擁有權限
+`-` | 非遊客用戶組
 
 ## 要 Token (登入)
 
@@ -44,6 +45,8 @@ password |  string |
 
 `.GET /accounts/{id}`
 
+權限: 本人或是管理員
+
 ### 取代
 
 `.PUT /accounts/{id}`
@@ -62,12 +65,12 @@ password |  string |
 
 `.PATCH /accounts/{id}`
 
-放自己想修改的欄位就好
+權限: 本人或是管理員
 
 ### 刪除
 `.DELETE /accounts/{id}`
 
-## 發註冊邀請碼
+權限: 本人或是管理員
 
 ## 註冊
 
@@ -82,7 +85,9 @@ Key | Value | Description
 username |  string |
 password |  string |
 
-## 邀請註冊 (register 用的 token)
+## 邀請註冊
+
+register 用的 token
 
 ### 取得所有邀請碼列表
 
@@ -105,7 +110,9 @@ remaining | int [1] | 邀請碼可以用幾次
 
 `+DELETE /invite/{TOKEN}`
 
-## Group (翻譯組)
+## Group
+
+翻譯組
 
 ### 取得 Group 列表
 

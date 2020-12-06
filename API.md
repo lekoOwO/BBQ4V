@@ -32,7 +32,7 @@ password |  string
 
 Key | Value | Description
 ---- | --- | ---
-id | int | ID |
+id | int | 正常留空 |
 username |  string |
 password |  string |
 role | role ["guest"] | 用戶所屬的用戶組
@@ -51,7 +51,7 @@ role | role ["guest"] | 用戶所屬的用戶組
 
 Key | Value | Description
 ---- | --- | ---
-id | int | 正常留空 |
+id | int | ID |
 username |  string |
 password |  string |
 role | role ["guest"] | 用戶所屬的用戶組

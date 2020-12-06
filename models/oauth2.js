@@ -74,7 +74,7 @@ module.exports = {
     // Web API 存取控制
     accessControl: function (allowedRoles) {
         return function (req, res, next) {
-            if (!req.user.role.length) {
+            if (!req.user || !req.user.role.length) {
                 res.customStatus = 400;
                 res.customError = { error: 'unauthorized_client', error_description: '權限不足！' };
             } else {

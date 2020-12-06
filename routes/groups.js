@@ -21,7 +21,7 @@ router.use(oauth2.accessControl, function (req, res, next) {
 router.route('/')
     // 取得所有資源
     // oauth2.accessControl 定義在這，可針對 Web API 的 CRUD 個別確認權限
-    .get(function (req, res) {
+    .get(oauth2.tokenVerify, function (req, res) {
         // 無權限
         if (res.customError) {
             res.status(res.customStatus).json(res.customError);

@@ -2,6 +2,8 @@
 
 +: 需要 Admin 權限
 
+.: 需要擁有權限
+
 ## 要 Token (登入)
 
 `POST /oauth2/token`
@@ -30,10 +32,40 @@ password |  string
 
 Key | Value | Description
 ---- | --- | ---
+id | int | ID |
+username |  string |
+password |  string |
+role | role ["guest"] | 用戶所屬的用戶組
+
+## 單帳號操作
+
+### 取得一個帳號
+
+`.GET /accounts/{id}`
+
+### 取代
+
+`.PUT /accounts/{id}`
+
+#### Body:
+
+Key | Value | Description
+---- | --- | ---
 id | int | 正常留空 |
 username |  string |
 password |  string |
 role | role ["guest"] | 用戶所屬的用戶組
+
+### 修改
+
+`.PATCH /accounts/{id}`
+
+放自己想修改的欄位就好
+
+### 刪除
+`.DELETE /accounts/{id}`
+
+## 發註冊邀請碼
 
 ## 註冊
 
@@ -71,3 +103,37 @@ remaining | int [1] | 邀請碼可以用幾次
 ### 刪除一個邀請碼
 
 `+DELETE /invite/{TOKEN}`
+
+## Group (翻譯組)
+
+### 取得 Group 列表
+
+`*GET /groups`
+
+### 新增一個 Group
+
+`+POST /groups`
+
+#### Body
+
+Key | Value | Description
+---- | --- | ---
+id | int | 正常留空 |
+name |  string |
+description |  string |
+
+### 取得一個 Group 的資訊
+
+`GET /groups/{ID}`
+
+### 刪除
+
+`+POST /groups/{ID}`
+
+### 取代
+
+`+PUT /groups/{ID}`
+
+### 更新
+
+`+PATCH /groups/{ID}`

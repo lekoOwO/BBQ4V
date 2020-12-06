@@ -33,12 +33,12 @@ app.use('/videos', videos);
 app.use('/clips', clips);
 app.use('/clipVideo', clipVideo);
 app.use('/videoTimemark', videoTimemark);
+app.use('/groups', groups);
 
 // 不須 token 即可訪問的 Web API 須定義在此上面，通常登入頁面 (此例為登入驗證取得 token 頁面的 /auth2/token)
 app.use(tokenVerify);
 
 app.use('/accounts', accounts);
-app.use('/groups', groups);
 app.use('/accountGroups', accountGroups);
 app.use('/invite', invite);
 

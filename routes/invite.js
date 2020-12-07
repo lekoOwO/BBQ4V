@@ -24,7 +24,7 @@ router.route('/')
         });
     })
     .post(oauth2.accessControl(["admin"]), function (req, res) {
-        if (req.user.role !== "admin") req.body.token = undefined
+        req.body.token = undefined
 
         registerToken.add(req, function (err, results, fields) {
             if (err) {
@@ -32,7 +32,7 @@ router.route('/')
                 return console.error(err);
             }
             
-            res.status(201).json(req.body.token);
+            res.status(201).json(results[0].token);
         });
     });
 

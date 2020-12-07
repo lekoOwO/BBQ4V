@@ -13,7 +13,7 @@ router.route("/:token")
             }
 
             if (results.changedRows <= 0) {
-                return res.sendStatus(403).json("Token does not exist or remaining times exhausted.");
+                return res.status(403).json("Token does not exist or remaining times exhausted.");
             }
 
             accounts.add(req, function (err, results, fields) {

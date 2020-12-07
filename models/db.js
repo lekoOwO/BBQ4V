@@ -25,9 +25,9 @@ function getConnection(cb) {
     })
 }
 
-pool.on('release', function (connection) {
-    console.log('Connection %d released', connection.threadId);
-});
+// pool.on('release', function (connection) {
+//     console.log('Connection %d released', connection.threadId);
+// });
 
 module.exports = {
     query,

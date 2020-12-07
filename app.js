@@ -1,6 +1,7 @@
 var bodyparser = require('body-parser');    // 解析 HTTP 請求主體的中介軟體
 var express = require('express');
 var cors = require('cors');                 // 跨來源資源共用 (允許不同網域的 HTTP 請求)
+var morgan = require('morgan')
 
 var conf = require('./conf');
 var functions = require('./functions');
@@ -20,6 +21,7 @@ var videoTimemark = require('./routes/video-timemark');
 var app = express();
 
 app.use(cors());
+app.use(morgan('common'))
 
 // 使用 bodyparser.json() 將 HTTP 請求方法 POST、DELETE、PUT 和 PATCH，放在 HTTP 主體 (body) 發送的參數存放在 req.body
 app.use(bodyparser.urlencoded({ extended: false }));

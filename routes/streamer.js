@@ -33,8 +33,6 @@ router.route('/')
                 return console.error(err);
             }
 
-
-
             res.json(results);
         });
     })

@@ -19,9 +19,7 @@ router.route('/')
                 res.sendStatus(500);
                 return console.error(err);
             }
-
-
-
+            
             res.json(results);
         });
     })

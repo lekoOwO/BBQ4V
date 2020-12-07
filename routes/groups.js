@@ -34,9 +34,7 @@ router.route('/')
                 return console.error(err);
             }
 
-
-
-            res.json(results);
+            res.status(200).json(results);
         });
     })
     
@@ -64,7 +62,7 @@ router.route('/:id')
                 return;
             }
 
-            res.json(results);
+            res.status(200).json(results);
         });
     })
     // 刪除指定的一筆資源

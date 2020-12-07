@@ -34,8 +34,6 @@ router.route('/')
                 return console.error(err);
             }
 
-
-
             res.json(results);
         });
     }))
@@ -45,7 +43,6 @@ router.route('/')
                 res.sendStatus(500);
                 return console.error(err);
             }
-
             
             res.status(201).json(results.insertId);
         });

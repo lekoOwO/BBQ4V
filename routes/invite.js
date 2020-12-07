@@ -2,6 +2,8 @@ var express = require('express');
 var oauth2 = require('../models/oauth2');
 var registerToken = require('../models/registerToken');
 
+const { v4: uuidv4 } = require('uuid');
+
 var router = express.Router();
 
 router.route('/')
@@ -24,13 +26,14 @@ router.route('/')
         });
     })
     .post(oauth2.accessControl(["admin"]), function (req, res) {
+        req.body.token = uuidv4()
         registerToken.add(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);
                 return console.error(err);
             }
             
-            res.status(201).json(results[0].token);
+            res.status(201).json(req.body.token);
         });
     });
 

@@ -74,9 +74,6 @@ module.exports = {
     },
     // Web API 存取控制
     accessControl: function (allowedRoles) {
-        let result = [];
-        if (!req.isTokenVerified) result.append(this.tokenVerify);
-
         const tmp = function (req, res, next) {
             if (!req.user || !req.user.role.length) {
                 res.status(401).json({ error: 'unauthorized_client', error_description: '權限不足！' })
@@ -141,7 +138,14 @@ module.exports = {
                 })
             }
         }
-        result.append(tmp)
-        return result
+        return function(req, res, next) {
+            if (!req.isTokenVerified) {
+                this.tokenVerify(req, res, () => {
+                    tmp(req, res, next)
+                })
+            } else {
+                tmp(req, res, next)
+            }
+        }
     }
 };

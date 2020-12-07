@@ -64,12 +64,11 @@ module.exports = {
                             break;
                     }
                 } else {
-                    req.user = decoded;                    
+                    req.user = decoded;   
+                    next();                 
                 }
             });
         }
-
-        next();
     },
     // Web API 存取控制
     accessControl: function (allowedRoles) {
@@ -134,7 +133,7 @@ module.exports = {
                     if (!allowed) {
                         res.customStatus = 400;
                         res.customError = { error: 'unauthorized_client', error_description: '權限不足！' };
-                        res.status(res.customStatus).json(res.customError)
+                        return res.status(res.customStatus).json(res.customError)
                     }
                     else next()
                 })

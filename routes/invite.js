@@ -24,8 +24,6 @@ router.route('/')
         });
     })
     .post(oauth2.accessControl(["admin"]), function (req, res) {
-        req.body.token = undefined
-
         registerToken.add(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);

@@ -73,7 +73,7 @@ module.exports = {
     },
     // Web API 存取控制
     accessControl: function (allowedRoles) {
-        const tmp = function (req, res, next) {
+        const tmp = async function (req, res, next) {
             if (!req.user || !req.user.role.length) {
                 res.status(401).json({ error: 'unauthorized_client', error_description: '權限不足！' })
             } else {
@@ -84,57 +84,55 @@ module.exports = {
                     }
                 }
 
-                return new Promise(async (resolve, reject) => {
-                    let allowed = false;
+                let allowed = false;
 
-                    if (allowedRoles.role) {
-                        for await (const roleRule of allowedRoles.role) {
-                            if (roleRule[0] === "!") {
-                                if (req.user.role !== roleRule.slice(1)) {
-                                    allowed = true;
-                                    break;
-                                }
-                            } else if (req.user.role === roleRule) {
+                if (allowedRoles.role) {
+                    for await (const roleRule of allowedRoles.role) {
+                        if (roleRule[0] === "!") {
+                            if (req.user.role !== roleRule.slice(1)) {
                                 allowed = true;
                                 break;
                             }
+                        } else if (req.user.role === roleRule) {
+                            allowed = true;
+                            break;
                         }
                     }
-                    if (!allowed && allowedRoles.user) {
-                        for await (const userId of allowedRoles.user) {
-                            if (req.user.id === parseInt(userId)) {
+                }
+                if (!allowed && allowedRoles.user) {
+                    for await (const userId of allowedRoles.user) {
+                        if (req.user.id === parseInt(userId)) {
+                            allowed = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!allowed && allowedRoles.group) {
+                    const accountId = req.user.id;
+                    const [results, _] = await accountGroups.getGroup(accountId);
+
+                    const groupIds = results.map(x => x.groupId)
+                    for await (const rule of allowedRoles.group) {
+                        if (Number.isInteger(rule)) {
+                            if (groupIds.include(rule)) {
                                 allowed = true;
-                                break;
+                            }
+                        } else {
+                            // 使用 {table: TABLE_NAME, where: WHERE_CONSTRAINT} 來查詢使用者所屬群組 id 是否在指定的 table 內
+                            const tableName = await rule.table;
+                            const sql = mysql.format('SELECT 1 FROM ' + tableName + ` WHERE ${await (rule.where) || "TRUE"} AND groupId IN (?) =`, [groupIds]);
+                            const [results, _] = await db.queryP(sql);
+                            if (results.length) {
+                                allowed = true;
                             }
                         }
                     }
-
-                    if (!allowed && allowedRoles.group) {
-                        const accountId = req.user.id;
-                        const [results, _] = await accountGroups.getGroup(accountId);
-
-                        const groupIds = results.map(x => x.groupId)
-                        for await (const rule of allowedRoles.group) {
-                            if (Number.isInteger(rule)) {
-                                if (groupIds.include(rule)) {
-                                    allowed = true;
-                                }
-                            } else {
-                                // 使用 {table: TABLE_NAME, where: WHERE_CONSTRAINT} 來查詢使用者所屬群組 id 是否在指定的 table 內
-                                const tableName = await rule.table;
-                                const sql = mysql.format('SELECT 1 FROM ' + tableName + ` WHERE ${await (rule.where) || "TRUE"} AND groupId IN (?) =`, [groupIds]);
-                                const [results, _] = await db.queryP(sql);
-                                if (results.length) {
-                                    allowed = true;
-                                }
-                            }
-                        }
-                    }
-                    if (!allowed) {
-                        res.status(400).json({ error: 'unauthorized_client', error_description: '權限不足！' })
-                    }
-                    else next()
-                })
+                }
+                if (!allowed) {
+                    return res.status(400).json({ error: 'unauthorized_client', error_description: '權限不足！' })
+                }
+                else next()
             }
         }
         return (req, res, next) => {

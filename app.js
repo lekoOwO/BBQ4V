@@ -22,6 +22,13 @@ var app = express();
 
 app.use(cors());
 app.use(morgan('common'))
+morgan.token('remote-addr', function (req) {
+    return req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || 
+        req.ip ||
+        req._remoteAddress ||
+        (req.connection && req.connection.remoteAddress) ||
+        undefined;
+});
 
 // 使用 bodyparser.json() 將 HTTP 請求方法 POST、DELETE、PUT 和 PATCH，放在 HTTP 主體 (body) 發送的參數存放在 req.body
 app.use(bodyparser.urlencoded({ extended: false }));

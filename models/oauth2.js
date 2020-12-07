@@ -74,8 +74,7 @@ module.exports = {
     accessControl: function (allowedRoles) {
         return function (req, res, next) {
             if (!req.user || !req.user.role.length) {
-                res.customStatus = 400;
-                res.customError = { error: 'unauthorized_client', error_description: '權限不足！' };
+                res.status(401).json({ error: 'unauthorized_client', error_description: '權限不足！' })
             } else {
                 // 舊版權限管理轉新版
                 if (Array.isArray(allowedRoles)) {
@@ -131,9 +130,7 @@ module.exports = {
                         }
                     }
                     if (!allowed) {
-                        res.customStatus = 400;
-                        res.customError = { error: 'unauthorized_client', error_description: '權限不足！' };
-                        return res.status(res.customStatus).json(res.customError)
+                        res.status(400).json({ error: 'unauthorized_client', error_description: '權限不足！' })
                     }
                     else next()
                 })

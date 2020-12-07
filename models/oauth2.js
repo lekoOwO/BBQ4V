@@ -88,20 +88,20 @@ module.exports = {
                     let allowed = false;
 
                     if (allowedRoles.role) {
-                        for (const allowedRole of allowedRoles.role) {
-                            if (allowedRole[0] === "!") {
-                                if (req.user.role !== allowedRole.slice(1)) {
+                        for await (const roleRule of allowedRoles.role) {
+                            if (roleRule[0] === "!") {
+                                if (req.user.role !== roleRule.slice(1)) {
                                     allowed = true;
                                     break;
                                 }
-                            } else if (req.user.role === allowedRole) {
+                            } else if (req.user.role === roleRule) {
                                 allowed = true;
                                 break;
                             }
                         }
                     }
                     if (!allowed && allowedRoles.user) {
-                        for await (let userId of allowedRoles.user) {
+                        for await (const userId of allowedRoles.user) {
                             if (req.user.id === parseInt(userId)) {
                                 allowed = true;
                                 break;
@@ -114,15 +114,15 @@ module.exports = {
                         const [results, _] = await accountGroups.getGroup(accountId);
 
                         const groupIds = results.map(x => x.groupId)
-                        for await (const allowedRole of allowedRoles.group) {
-                            if (Number.isInteger(allowedRole)) {
-                                if (groupIds.include(allowedRole)) {
+                        for await (const rule of allowedRoles.group) {
+                            if (Number.isInteger(rule)) {
+                                if (groupIds.include(rule)) {
                                     allowed = true;
                                 }
                             } else {
                                 // 使用 {table: TABLE_NAME, where: WHERE_CONSTRAINT} 來查詢使用者所屬群組 id 是否在指定的 table 內
-                                const tableName = await allowedRole.table;
-                                const sql = mysql.format('SELECT 1 FROM ' + tableName + ` WHERE ${await (allowedRole.where) || "TRUE"} AND groupId IN (?) =`, [groupIds]);
+                                const tableName = await rule.table;
+                                const sql = mysql.format('SELECT 1 FROM ' + tableName + ` WHERE ${await (rule.where) || "TRUE"} AND groupId IN (?) =`, [groupIds]);
                                 const [results, _] = await db.queryP(sql);
                                 if (results.length) {
                                     allowed = true;

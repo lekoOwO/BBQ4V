@@ -1,6 +1,6 @@
 var mysql = require('mysql');
 const db = require("./db")
-var tableName = '\"register-token\"';
+var tableName = '`register-token`';
 
 module.exports = {
     add: function (req, callback){

@@ -138,7 +138,7 @@ module.exports = {
                 })
             }
         }
-        return function(req, res, next) {
+        return (req, res, next) => {
             if (!req.isTokenVerified) {
                 this.tokenVerify(req, res, () => {
                     tmp(req, res, next)

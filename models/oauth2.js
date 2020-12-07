@@ -56,11 +56,11 @@ module.exports = {
                     switch (err.name) {
                         // JWT 過期
                         case 'TokenExpiredError':
-                            res.customError = { error: 'invalid_grant', error_description: 'token 過期！' };
+                            return res.status(401).json({ error: 'invalid_grant', error_description: 'token 過期！' })
                             break;
                         // JWT 無效
                         case 'JsonWebTokenError':
-                            res.customError = { error: 'invalid_grant', error_description: 'token 無效！' };
+                            return res.status(401).json({ error: 'invalid_grant', error_description: 'token 無效！' })
                             break;
                     }
                 } else {

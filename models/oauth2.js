@@ -43,6 +43,8 @@ module.exports = {
     // 驗證 JWT
     tokenVerify: function (req, res, next) {
         // 沒有 JWT
+        req.isTokenVerified = true;
+
         if (!req.headers.authorization) {
             res.customStatus = 401;
             res.customError = { error: 'invalid_client', error_description: '沒有 token！' };
@@ -72,7 +74,10 @@ module.exports = {
     },
     // Web API 存取控制
     accessControl: function (allowedRoles) {
-        return function (req, res, next) {
+        let result = [];
+        if (!req.isTokenVerified) result.append(this.tokenVerify);
+
+        const tmp = function (req, res, next) {
             if (!req.user || !req.user.role.length) {
                 res.status(401).json({ error: 'unauthorized_client', error_description: '權限不足！' })
             } else {
@@ -136,5 +141,7 @@ module.exports = {
                 })
             }
         }
+        result.append(tmp)
+        return result
     }
 };

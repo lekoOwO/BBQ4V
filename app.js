@@ -20,6 +20,7 @@ var videoTimemark = require('./routes/video-timemark');
 
 var app = express();
 
+app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal'])
 app.use(cors());
 app.use(morgan('common'))
 morgan.token('remote-addr', function (req) {

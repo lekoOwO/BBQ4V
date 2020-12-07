@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 const db = require("./db")
 
-const tableName = "account-groups"
+const tableName = "\"account-groups\""
 
 module.exports = {
     items: function (req, callback) {

@@ -38,7 +38,7 @@ router.route('/')
         });
     })
     
-    .post(oauth2.accessControl(["admin"]),function (req, res) {
+    .post([oauth2.tokenVerify. oauth2.accessControl(["admin"])],function (req, res) {
         groups.add(req, function (err, results, fields) {
             if (err) {
                 res.sendStatus(500);

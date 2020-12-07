@@ -46,8 +46,7 @@ module.exports = {
         req.isTokenVerified = true;
 
         if (!req.headers.authorization) {
-            res.customStatus = 401;
-            res.customError = { error: 'invalid_client', error_description: '沒有 token！' };
+            return res.status(401).json({ error: 'invalid_client', error_description: '沒有 token！' })
         }
     
         if (req.headers.authorization && req.headers.authorization.split(' ')[0] == 'Bearer') {
